@@ -12,6 +12,9 @@ on:
     branches:
       - "rdo-workflows"
 
+env:
+  PKGDIR: /home/runner/work/nl-kat-coordination
+
 jobs:
   build:
     runs-on: ubuntu-20.04
@@ -58,14 +61,14 @@ jobs:
         run: cd /var/www/html; source .venv/bin/activate; pip install --upgrade pip; pip install --requirement requirements.txt
 
       - name: Octopoes Create venv archive
-        run: tar -zcvf ../octopoes_venv_${{ env.RELEASE_VERSION }}.tar.gz -C /var/www/html/ .venv
+        run: tar -zcvf ${{ env.PKGDIR }}/octopoes_venv_${{ env.RELEASE_VERSION }}.tar.gz -C /var/www/html/ .venv
 
       - name: Octopoes Enable production logging config
         run: mv prod.logging.yml logging.yml
         working-directory: ./octopoes
 
       - name: Octopoes Create Octopoes release
-        run: tar -cvzf ../../octopoes_${{ env.RELEASE_VERSION }}.tar.gz .
+        run: tar -cvzf ${{ env.PKGDIR }}/octopoes_${{ env.RELEASE_VERSION }}.tar.gz .
         working-directory: ./octopoes
 
       - name: Octopoes Build Octopoes wheel
@@ -89,7 +92,7 @@ jobs:
         run: cd /var/www/html; source .venv/bin/activate; pip install --upgrade pip; pip install --requirement requirements.txt; pip install ${{ github.workspace }}/octopoes/dist/octopoes*.whl
 
       - name: Rocky Create rocky_venv tarball
-        run: tar -zcvf ../rocky_venv_${{ env.RELEASE_VERSION }}.tar.gz -C /var/www/html/ .venv
+        run: tar -zcvf ${{ env.PKGDIR }}/rocky_venv_${{ env.RELEASE_VERSION }}.tar.gz -C /var/www/html/ .venv
 
       - name: Rocky Run nvm install
         run: nvm install v16
@@ -120,7 +123,7 @@ jobs:
         working-directory: ./rocky
 
       - name: Rocky Create rocky release
-        run: tar -cvzf ../../rocky_${{ env.RELEASE_VERSION }}.tar.gz --exclude node_modules --exclude rocky_venv* --exclude=.git* --exclude .parcel-cache --exclude Dockerfile .
+        run: tar -cvzf ${{ env.PKGDIR }}/rocky_${{ env.RELEASE_VERSION }}.tar.gz --exclude node_modules --exclude rocky_venv* --exclude=.git* --exclude .parcel-cache --exclude Dockerfile .
         working-directory: ./rocky
 
   # Bytes
@@ -138,11 +141,11 @@ jobs:
         run: cd /var/www/html; source .venv/bin/activate; pip install --upgrade pip; pip install --requirement requirements.txt
 
       - name: Bytes Create bytes release
-        run: tar -cvzf ../../bytes_${{ env.RELEASE_VERSION }}.tar.gz --exclude=./.git* .
+        run: tar -cvzf ${{ env.PKGDIR }}/bytes_${{ env.RELEASE_VERSION }}.tar.gz --exclude=./.git* .
         working-directory: ./bytes
 
       - name: Bytes Create bytes venv package
-        run: tar -zcvf bytes_venv_${{ env.RELEASE_VERSION }}.tar.gz -C /var/www/html/ .venv
+        run: tar -zcvf ${{ env.PKGDIR }}/bytes_venv_${{ env.RELEASE_VERSION }}.tar.gz -C /var/www/html/ .venv
 
   # Mula / Scheduler
       - name: Mula Create /var/lib/html
@@ -156,7 +159,7 @@ jobs:
         run: python3.8 -m venv /var/www/html/.venv
 
       - name: Create scheduler release archive
-        run: tar -cvzf ../../scheduler_${{ env.RELEASE_VERSION }}.tar.gz --exclude=./.git* --exclude=Makefile --exclude=Dockerfile --exclude=base.yml --exclude=requirements* --exclude=tests .
+        run: tar -cvzf ${{ env.PKGDIR }}/scheduler_${{ env.RELEASE_VERSION }}.tar.gz --exclude=./.git* --exclude=Makefile --exclude=Dockerfile --exclude=base.yml --exclude=requirements* --exclude=tests .
         working-directory: ./mula
 
       - name: Create virtual env
@@ -167,7 +170,7 @@ jobs:
         working-directory: /var/www/html
 
       - name: Create venv archive
-        run: tar -zcvf scheduler_venv_${{ env.RELEASE_VERSION }}.tar.gz -C /var/www/html/ .venv
+        run: tar -zcvf ${{ env.PKGDIR }}/scheduler_venv_${{ env.RELEASE_VERSION }}.tar.gz -C /var/www/html/ .venv
 
   # Boefjes
       - name: Boefjes Create /var/lib/html
@@ -185,10 +188,10 @@ jobs:
         working-directory: /var/www/html
 
       - name: Create archive
-        run: tar -zcvf ../boefjes_venv_${{ env.RELEASE_VERSION }}.tar.gz -C /var/www/html/ .venv
+        run: tar -zcvf ${{ env.PKGDIR }}/boefjes_venv_${{ env.RELEASE_VERSION }}.tar.gz -C /var/www/html/ .venv
 
       - name: Create boefjes release
-        run: tar -cvzf ../../boefjes_${{ env.RELEASE_VERSION }}.tar.gz .
+        run: tar -cvzf ${{ env.PKGDIR }}/boefjes_${{ env.RELEASE_VERSION }}.tar.gz .
         working-directory: ./boefjes
 
   # Keiko
@@ -207,10 +210,10 @@ jobs:
         working-directory: /var/www/html
 
       - name: Keiko Create archive
-        run: tar -zcvf ../katkeiko_venv_${{ env.RELEASE_VERSION }}.tar.gz -C /var/www/html/ .venv
+        run: tar -zcvf ${{ env.PKGDIR }}/katkeiko_venv_${{ env.RELEASE_VERSION }}.tar.gz -C /var/www/html/ .venv
 
       - name: Keiko Create katkeiko release
-        run: tar -cvzf ../../katkeiko_${{ env.RELEASE_VERSION }}.tar.gz .
+        run: tar -cvzf ${{ env.PKGDIR }}/katkeiko_${{ env.RELEASE_VERSION }}.tar.gz .
         working-directory: ./keiko
 
   # Common / Uploads
@@ -224,70 +227,70 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: octopoes_venv_${{ env.RELEASE_VERSION }}
-          path: ../octopoes_venv_${{ env.RELEASE_VERSION }}.tar.gz
+          path: ${{ env.PKGDIR }}/octopoes_venv_${{ env.RELEASE_VERSION }}.tar.gz
 
       - name: Octopoes Upload octopoes tar
         uses: actions/upload-artifact@v3
         with:
           name: octopoes_${{ env.RELEASE_VERSION }}
-          path: ../octopoes_${{ env.RELEASE_VERSION }}.tar.gz
+          path: ${{ env.PKGDIR }}/octopoes_${{ env.RELEASE_VERSION }}.tar.gz
 
       - name: Rocky Upload rocky tar
         uses: actions/upload-artifact@v3
         with:
           name: rocky_${{ env.RELEASE_VERSION }}
-          path: ../rocky_${{ env.RELEASE_VERSION }}.tar.gz
+          path: ${{ env.PKGDIR }}/rocky_${{ env.RELEASE_VERSION }}.tar.gz
 
       - name: Rocky Upload venv tar
         uses: actions/upload-artifact@v3
         with:
           name: rocky_venv_${{ env.RELEASE_VERSION }}
-          path: ../rocky_venv_${{ env.RELEASE_VERSION }}.tar.gz
+          path: ${{ env.PKGDIR }}/rocky_venv_${{ env.RELEASE_VERSION }}.tar.gz
 
       - name: Bytes Upload bytes tar
         uses: actions/upload-artifact@v3
         with:
           name: bytes_${{ env.RELEASE_VERSION }}
-          path: ../bytes_${{ env.RELEASE_VERSION }}.tar.gz
+          path: ${{ env.PKGDIR }}/bytes_${{ env.RELEASE_VERSION }}.tar.gz
 
       - name: Bytes Upload bytes venv tar
         uses: actions/upload-artifact@v3
         with:
           name: bytes_venv_${{ env.RELEASE_VERSION }}
-          path: bytes_venv_${{ env.RELEASE_VERSION }}.tar.gz
+          path: ${{ env.PKGDIR }}/bytes_venv_${{ env.RELEASE_VERSION }}.tar.gz
 
       - name: Upload scheduler release
         uses: actions/upload-artifact@v3
         with:
           name: scheduler_${{ env.RELEASE_VERSION }}
-          path: ../scheduler_${{ env.RELEASE_VERSION }}.tar.gz
+          path: ${{ env.PKGDIR }}/scheduler_${{ env.RELEASE_VERSION }}.tar.gz
 
       - name: Upload venv archive
         uses: actions/upload-artifact@v3
         with:
           name: scheduler_venv_${{ env.RELEASE_VERSION }}
-          path: scheduler_venv_${{ env.RELEASE_VERSION }}.tar.gz
+          path: ${{ env.PKGDIR }}/scheduler_venv_${{ env.RELEASE_VERSION }}.tar.gz
 
       - name: Upload boefjes tar
         uses: actions/upload-artifact@v3
         with:
           name: boefjes_${{ env.RELEASE_VERSION }}
-          path: ../boefjes_${{ env.RELEASE_VERSION }}.tar.gz
+          path: ${{ env.PKGDIR }}/boefjes_${{ env.RELEASE_VERSION }}.tar.gz
 
       - name: Upload venv tar
         uses: actions/upload-artifact@v3
         with:
           name: boefjes_venv_${{ env.RELEASE_VERSION }}
-          path: ../boefjes_venv_${{ env.RELEASE_VERSION }}.tar.gz
+          path: ${{ env.PKGDIR }}/boefjes_venv_${{ env.RELEASE_VERSION }}.tar.gz
 
       - name: Keiko Upload tar
         uses: actions/upload-artifact@v3
         with:
           name: katkeiko_${{ env.RELEASE_VERSION }}
-          path: ../katkeiko_${{ env.RELEASE_VERSION }}.tar.gz
+          path: ${{ env.PKGDIR }}/katkeiko_${{ env.RELEASE_VERSION }}.tar.gz
 
       - name: Keiko Upload venv tar
         uses: actions/upload-artifact@v3
         with:
           name: katkeiko_venv_${{ env.RELEASE_VERSION }}
-          path: ../katkeiko_venv_${{ env.RELEASE_VERSION }}.tar.gz
+          path: ${{ env.PKGDIR }}/katkeiko_venv_${{ env.RELEASE_VERSION }}.tar.gz
