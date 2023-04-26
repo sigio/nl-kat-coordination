@@ -120,7 +120,7 @@ jobs:
         working-directory: ./rocky
 
       - name: Rocky Create rocky release
-        run: tar -cvzf ../../rocky_${{ env.RELEASE_VERSION }}.tar.gz --exclude node_modules --exclude rocky_venv* --  exclude=.git* --exclude .parcel-cache --exclude Dockerfile .
+        run: tar -cvzf ../../rocky_${{ env.RELEASE_VERSION }}.tar.gz --exclude node_modules --exclude rocky_venv* --exclude=.git* --exclude .parcel-cache --exclude Dockerfile .
         working-directory: ./rocky
 
   # Bytes
